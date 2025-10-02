@@ -18,3 +18,8 @@ models:
     bronze:
       +materialized: table
       +schema: bronze
+      # Ensure audit_log runs first
+      bz_audit_log:
+        +materialized: table
+        +schema: bronze
+        +tags: ['audit']
