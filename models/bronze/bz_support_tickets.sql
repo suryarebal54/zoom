@@ -1,18 +1,17 @@
 {{config(
-  materialized = 'table',
-  schema = 'bronze'
+    materialized='table',
+    schema='bronze',
+    pre_hook="{{ log_audit_start('support_tickets') }}",
+    post_hook="{{ log_audit_end('support_tickets') }}"
 )}}
 
--- Extract support tickets data from raw source and apply transformations
 SELECT
-  -- Direct mappings from source
-  ticket_id,
-  user_id,
-  ticket_type,
-  resolution_status,
-  open_date,
-  -- Metadata columns
-  CURRENT_TIMESTAMP() as load_timestamp,
-  CURRENT_TIMESTAMP() as update_timestamp,
-  'ZOOM_PLATFORM' as source_system
+    ticket_id,
+    user_id,
+    ticket_type,
+    resolution_status,
+    open_date,
+    load_timestamp,
+    CURRENT_TIMESTAMP() as update_timestamp,
+    'ZOOM_PLATFORM' as source_system
 FROM {{ source('raw', 'support_tickets') }}
