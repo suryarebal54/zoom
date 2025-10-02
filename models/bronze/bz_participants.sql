@@ -1,18 +1,17 @@
 {{config(
-  materialized = 'table',
-  schema = 'bronze'
+    materialized='table',
+    schema='bronze',
+    pre_hook="{{ log_audit_start('participants') }}",
+    post_hook="{{ log_audit_end('participants') }}"
 )}}
 
--- Extract participants data from raw source and apply transformations
 SELECT
-  -- Direct mappings from source
-  participant_id,
-  meeting_id,
-  user_id,
-  join_time,
-  leave_time,
-  -- Metadata columns
-  CURRENT_TIMESTAMP() as load_timestamp,
-  CURRENT_TIMESTAMP() as update_timestamp,
-  'ZOOM_PLATFORM' as source_system
+    participant_id,
+    meeting_id,
+    user_id,
+    join_time,
+    leave_time,
+    load_timestamp,
+    CURRENT_TIMESTAMP() as update_timestamp,
+    'ZOOM_PLATFORM' as source_system
 FROM {{ source('raw', 'participants') }}
