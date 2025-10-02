@@ -13,13 +13,16 @@ analysis-paths: ["analyses"]
 target-path: "target"
 clean-targets: ["target"]
 
+vars:
+  source_schema: 'RAW'
+  target_schema: 'BRONZE'
+
 models:
   zoom:
     bronze:
       +materialized: table
       +schema: bronze
-      # Ensure audit_log runs first
-      bz_audit_log:
-        +materialized: table
-        +schema: bronze
-        +tags: ['audit']
+      +pre-hook:
+        - "{{ audit_start_hook() }}"
+      +post-hook:
+        - "{{ audit_end_hook() }}"
