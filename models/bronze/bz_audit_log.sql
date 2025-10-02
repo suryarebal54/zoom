@@ -1,16 +1,20 @@
-{{
-    config(
-        materialized='incremental',
-        unique_key='record_id'
-    )
-}}
+{{config(
+    materialized='incremental',
+    unique_key='record_id'
+)}}
 
--- Create the audit log table if it doesn't exist
+-- This model is created first to support audit logging
+-- It will be used by pre-hooks and post-hooks to log model execution
+
 SELECT
-    NULL as record_id,
-    NULL as source_table,
-    CURRENT_TIMESTAMP() as load_timestamp,
-    CURRENT_USER() as processed_by,
-    0 as processing_time,
-    'INITIAL' as status
-WHERE 1=0
+    record_id,
+    source_table,
+    load_timestamp,
+    processed_by,
+    processing_time,
+    status
+FROM {{ target.schema }}.bz_audit_log
+
+{% if is_incremental() %}
+WHERE load_timestamp > (SELECT MAX(load_timestamp) FROM {{ this }})
+{% endif %}
