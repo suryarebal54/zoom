@@ -1,0 +1,28 @@
+name: 'zoom_analytics'
+version: '1.0.0'
+config-version: 2
+
+profile: 'default'
+
+model-paths: ["models"]
+macro-paths: ["macros"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+analysis-paths: ["analyses"]
+
+target-path: "target"
+clean-targets: ["target"]
+
+vars:
+  source_schema: 'RAW'
+  target_schema: 'BRONZE'
+
+models:
+  zoom_analytics:
+    bronze:
+      +materialized: table
+      +schema: bronze
+      audit:
+        +schema: bronze
+        +materialized: incremental
+        +tags: ['audit']
