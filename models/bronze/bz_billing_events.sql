@@ -1,17 +1,35 @@
-{{config(
+{{ config(
     materialized='table',
-    schema='bronze',
-    pre_hook="{{ log_audit_start('billing_events') }}",
-    post_hook="{{ log_audit_end('billing_events') }}"
-)}}
+    schema='bronze'
+) }}
 
-SELECT
-    event_id,
-    user_id,
-    event_type,
-    amount,
-    event_date,
-    load_timestamp,
-    CURRENT_TIMESTAMP() as update_timestamp,
-    'ZOOM_PLATFORM' as source_system
-FROM {{ source('raw', 'billing_events') }}
+WITH source_data AS (
+    SELECT
+        event_id,
+        user_id,
+        event_type,
+        amount,
+        event_date,
+        load_timestamp,
+        update_timestamp,
+        source_system
+    FROM {{ source('raw', 'billing_events') }}
+),
+
+validated_data AS (
+    SELECT
+        -- Primary fields
+        TRIM(event_id) AS event_id,
+        TRIM(user_id) AS user_id,
+        TRIM(event_type) AS event_type,
+        amount,
+        event_date,
+        
+        -- Metadata fields
+        COALESCE(load_timestamp, CURRENT_TIMESTAMP()) AS load_timestamp,
+        COALESCE(update_timestamp, CURRENT_TIMESTAMP()) AS update_timestamp,
+        COALESCE(source_system, 'ZOOM_PLATFORM') AS source_system
+    FROM source_data
+)
+
+SELECT * FROM validated_data
