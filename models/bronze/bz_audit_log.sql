@@ -1,18 +1,14 @@
 {{config(
-  materialized = 'incremental',
-  unique_key = 'record_id'
+    materialized='table',
+    schema='bronze'
 )}}
 
 -- Create the audit log table if it doesn't exist
 SELECT
-  ROW_NUMBER() OVER (ORDER BY CURRENT_TIMESTAMP()) as record_id,
-  'INITIAL' as source_table,
-  CURRENT_TIMESTAMP() as load_timestamp,
-  'SYSTEM' as processed_by,
-  0 as processing_time,
-  'INITIALIZED' as status
-
-{% if is_incremental() %}
-  -- This will only be executed on subsequent runs
-  WHERE FALSE
-{% endif %}
+    NULL as record_id,
+    'INITIAL_SETUP' as source_table,
+    CURRENT_TIMESTAMP() as load_timestamp,
+    '{{ target.user }}' as processed_by,
+    0 as processing_time,
+    'SETUP' as status
+WHERE NOT EXISTS (SELECT 1 FROM {{ this }})
