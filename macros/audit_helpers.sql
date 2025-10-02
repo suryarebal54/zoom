@@ -1,21 +1,48 @@
-{% macro log_table_load(source_table, status) %}
-    INSERT INTO {{ ref('bz_audit_log') }} (source_table, load_timestamp, processed_by, processing_time, status)
-    SELECT 
-        '{{ source_table }}' as source_table,
-        CURRENT_TIMESTAMP() as load_timestamp,
-        CURRENT_USER() as processed_by,
-        DATEDIFF('MILLISECOND', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP()) as processing_time,
-        '{{ status }}' as status
+{% macro log_model_start(model_name) %}
+  {% if execute %}
+    {% set audit_query %}
+      INSERT INTO {{ target.schema }}.bz_audit_log (
+        source_table,
+        load_timestamp,
+        processed_by,
+        processing_time,
+        status
+      )
+      SELECT
+        '{{ model_name }}',
+        CURRENT_TIMESTAMP(),
+        '{{ target.user }}',
+        NULL,
+        'STARTED'
+      ;
+    {% endset %}
+    {% do run_query(audit_query) %}
+  {% endif %}
 {% endmacro %}
 
-{% macro pre_hook_log(source_table) %}
-    {% if this.name != 'bz_audit_log' %}
-        {{ log_table_load(source_table, 'STARTED') }}
-    {% endif %}
-{% endmacro %}
-
-{% macro post_hook_log(source_table) %}
-    {% if this.name != 'bz_audit_log' %}
-        {{ log_table_load(source_table, 'COMPLETED') }}
-    {% endif %}
+{% macro log_model_completion(model_name) %}
+  {% if execute %}
+    {% set audit_query %}
+      INSERT INTO {{ target.schema }}.bz_audit_log (
+        source_table,
+        load_timestamp,
+        processed_by,
+        processing_time,
+        status
+      )
+      SELECT
+        '{{ model_name }}',
+        CURRENT_TIMESTAMP(),
+        '{{ target.user }}',
+        DATEDIFF('MILLISECOND', (
+          SELECT MAX(load_timestamp)
+          FROM {{ target.schema }}.bz_audit_log
+          WHERE source_table = '{{ model_name }}'
+          AND status = 'STARTED'
+        ), CURRENT_TIMESTAMP()),
+        'COMPLETED'
+      ;
+    {% endset %}
+    {% do run_query(audit_query) %}
+  {% endif %}
 {% endmacro %}
