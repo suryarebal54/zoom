@@ -2,23 +2,26 @@ name: 'zoom'
 version: '1.0.0'
 config-version: 2
 
-profile: 'Analytics'
+# This setting configures which "profile" dbt uses for this project.
+profile: 'default'
 
+# These configurations specify where dbt should look for different types of files.
 model-paths: ["models"]
 macro-paths: ["macros"]
-seed-paths: ["seeds"]
-test-paths: ["tests"]
-analysis-paths: ["analyses"]
 
-target-path: "target"
+target-path: "target"  # directory which will store compiled SQL files
 clean-targets: ["target"]
 
+# Configuring models
 models:
   zoom:
+    # Config indicated by + and applies to all files under models/
+    +materialized: view
     bronze:
       +materialized: table
       +schema: bronze
-      audit:
-        +schema: bronze
-        +materialized: incremental
-        +tags: ["audit"]
+      # Add audit columns to all bronze models
+      +pre-hook:
+        - "{{ logging.log_model_start() }}"
+      +post-hook:
+        - "{{ logging.log_model_end() }}"
