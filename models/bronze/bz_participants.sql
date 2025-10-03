@@ -1,34 +1,18 @@
-{{ config(
+{{config(
     materialized='table',
-    schema='bronze'
-) }}
+    pre_hook="{% set start_time = modules.datetime.datetime.now() %} {{ log_audit_start('participants') }}",
+    post_hook="{{ log_audit_end('participants', 'timestamp\'' + start_time.strftime('%Y-%m-%d %H:%M:%S') + '\'') }}"
+)}}
 
-with source_data as (
-    select
-        participant_id,
-        meeting_id,
-        user_id,
-        join_time,
-        leave_time,
-        load_timestamp,
-        update_timestamp,
-        source_system
-    from {{ source('raw', 'participants') }}
-),
-
-final as (
-    select
-        -- Direct mappings from source
-        participant_id,
-        meeting_id,
-        user_id,
-        join_time,
-        leave_time,
-        -- Metadata columns
-        load_timestamp,
-        current_timestamp() as update_timestamp,
-        coalesce(source_system, 'ZOOM_PLATFORM') as source_system
-    from source_data
-)
-
-select * from final
+SELECT
+    -- Source columns
+    Participant_ID as participant_id,
+    Meeting_ID as meeting_id,
+    User_ID as user_id,
+    Join_Time as join_time,
+    Leave_Time as leave_time,
+    -- Metadata columns
+    CURRENT_TIMESTAMP() as load_timestamp,
+    CURRENT_TIMESTAMP() as update_timestamp,
+    '{{ var("source_system") }}' as source_system
+FROM {{ source('raw', 'participants') }}
