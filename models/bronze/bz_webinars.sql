@@ -1,37 +1,32 @@
-{{ config(
-    materialized='table',
-    schema='bronze'
-) }}
+{{config(
+  materialized = 'table',
+  pre_hook="{{ log_audit_start('webinars') }}",
+  post_hook="{{ log_audit_end('webinars') }}"
+)}}
 
 WITH source_data AS (
-    SELECT
-        webinar_id,
-        host_id,
-        webinar_topic,
-        start_time,
-        end_time,
-        registrants,
-        load_timestamp,
-        update_timestamp,
-        source_system
-    FROM {{ source('raw', 'webinars') }}
+  SELECT
+    Webinar_ID,
+    Host_ID,
+    Webinar_Topic,
+    Start_Time,
+    End_Time,
+    Registrants
+  FROM {{ source('zoom', 'webinars') }}
 ),
 
-validated_data AS (
-    SELECT
-        -- Primary fields
-        TRIM(webinar_id) AS webinar_id,
-        TRIM(host_id) AS host_id,
-        TRIM(webinar_topic) AS webinar_topic,
-        start_time,
-        end_time,
-        registrants,
-        
-        -- Metadata fields
-        COALESCE(load_timestamp, CURRENT_TIMESTAMP()) AS load_timestamp,
-        COALESCE(update_timestamp, CURRENT_TIMESTAMP()) AS update_timestamp,
-        COALESCE(source_system, 'ZOOM_PLATFORM') AS source_system
-    FROM source_data
+final AS (
+  SELECT
+    Webinar_ID as webinar_id,
+    Host_ID as host_id,
+    Webinar_Topic as webinar_topic,
+    Start_Time as start_time,
+    End_Time as end_time,
+    Registrants as registrants,
+    CURRENT_TIMESTAMP() as load_timestamp,
+    CURRENT_TIMESTAMP() as update_timestamp,
+    'ZOOM_PLATFORM' as source_system
+  FROM source_data
 )
 
-SELECT * FROM validated_data
+SELECT * FROM final
