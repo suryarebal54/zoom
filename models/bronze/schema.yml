@@ -1,350 +1,294 @@
 version: 2
 
 sources:
-  - name: raw
+  - name: zoom
     schema: raw
     tables:
       - name: users
-        description: Raw users data from Zoom platform
         columns:
-          - name: user_id
-            description: Unique identifier for a user
-          - name: user_name
-            description: Name of the user
-          - name: email
-            description: Email address of the user
-          - name: company
-            description: Company the user belongs to
-          - name: plan_type
-            description: Type of plan the user has
-          - name: load_timestamp
-            description: Timestamp when the record was loaded
-          - name: update_timestamp
-            description: Timestamp when the record was last updated
-          - name: source_system
-            description: Source system of the data
-
+          - name: User_ID
+            tests:
+              - not_null
+          - name: User_Name
+          - name: Email
+          - name: Company
+          - name: Plan_Type
+      
       - name: meetings
-        description: Raw meetings data from Zoom platform
         columns:
-          - name: meeting_id
-            description: Unique identifier for a meeting
-          - name: host_id
-            description: ID of the user hosting the meeting
-          - name: meeting_topic
-            description: Topic of the meeting
-          - name: start_time
-            description: Start time of the meeting
-          - name: end_time
-            description: End time of the meeting
-          - name: duration_minutes
-            description: Duration of the meeting in minutes
-          - name: load_timestamp
-            description: Timestamp when the record was loaded
-          - name: update_timestamp
-            description: Timestamp when the record was last updated
-          - name: source_system
-            description: Source system of the data
-
+          - name: Meeting_ID
+            tests:
+              - not_null
+          - name: Host_ID
+          - name: Meeting_Topic
+          - name: Start_Time
+          - name: End_Time
+          - name: Duration_Minutes
+      
       - name: participants
-        description: Raw participants data from Zoom platform
         columns:
-          - name: participant_id
-            description: Unique identifier for a participant
-          - name: meeting_id
-            description: ID of the meeting
-          - name: user_id
-            description: ID of the user participating
-          - name: join_time
-            description: Time when the participant joined the meeting
-          - name: leave_time
-            description: Time when the participant left the meeting
-          - name: load_timestamp
-            description: Timestamp when the record was loaded
-          - name: update_timestamp
-            description: Timestamp when the record was last updated
-          - name: source_system
-            description: Source system of the data
-
+          - name: Participant_ID
+            tests:
+              - not_null
+          - name: Meeting_ID
+          - name: User_ID
+          - name: Join_Time
+          - name: Leave_Time
+      
       - name: feature_usage
-        description: Raw feature usage data from Zoom platform
         columns:
-          - name: usage_id
-            description: Unique identifier for a feature usage record
-          - name: meeting_id
-            description: ID of the meeting
-          - name: feature_name
-            description: Name of the feature used
-          - name: usage_count
-            description: Count of feature usage
-          - name: usage_date
-            description: Date of feature usage
-          - name: load_timestamp
-            description: Timestamp when the record was loaded
-          - name: update_timestamp
-            description: Timestamp when the record was last updated
-          - name: source_system
-            description: Source system of the data
-
+          - name: Usage_ID
+            tests:
+              - not_null
+          - name: Meeting_ID
+          - name: Feature_Name
+          - name: Usage_Count
+          - name: Usage_Date
+      
       - name: webinars
-        description: Raw webinars data from Zoom platform
         columns:
-          - name: webinar_id
-            description: Unique identifier for a webinar
-          - name: host_id
-            description: ID of the user hosting the webinar
-          - name: webinar_topic
-            description: Topic of the webinar
-          - name: start_time
-            description: Start time of the webinar
-          - name: end_time
-            description: End time of the webinar
-          - name: registrants
-            description: Number of registrants for the webinar
-          - name: load_timestamp
-            description: Timestamp when the record was loaded
-          - name: update_timestamp
-            description: Timestamp when the record was last updated
-          - name: source_system
-            description: Source system of the data
-
+          - name: Webinar_ID
+            tests:
+              - not_null
+          - name: Host_ID
+          - name: Webinar_Topic
+          - name: Start_Time
+          - name: End_Time
+          - name: Registrants
+      
       - name: support_tickets
-        description: Raw support tickets data from Zoom platform
         columns:
-          - name: ticket_id
-            description: Unique identifier for a support ticket
-          - name: user_id
-            description: ID of the user who created the ticket
-          - name: ticket_type
-            description: Type of the support ticket
-          - name: resolution_status
-            description: Status of ticket resolution
-          - name: open_date
-            description: Date when the ticket was opened
-          - name: load_timestamp
-            description: Timestamp when the record was loaded
-          - name: update_timestamp
-            description: Timestamp when the record was last updated
-          - name: source_system
-            description: Source system of the data
-
+          - name: Ticket_ID
+            tests:
+              - not_null
+          - name: User_ID
+          - name: Ticket_Type
+          - name: Resolution_Status
+          - name: Open_Date
+      
       - name: licenses
-        description: Raw licenses data from Zoom platform
         columns:
-          - name: license_id
-            description: Unique identifier for a license
-          - name: license_type
-            description: Type of license
-          - name: assigned_to_user_id
-            description: ID of the user the license is assigned to
-          - name: start_date
-            description: Start date of the license
-          - name: end_date
-            description: End date of the license
-          - name: load_timestamp
-            description: Timestamp when the record was loaded
-          - name: update_timestamp
-            description: Timestamp when the record was last updated
-          - name: source_system
-            description: Source system of the data
-
+          - name: License_ID
+            tests:
+              - not_null
+          - name: License_Type
+          - name: Assigned_To_User_ID
+          - name: Start_Date
+          - name: End_Date
+      
       - name: billing_events
-        description: Raw billing events data from Zoom platform
         columns:
-          - name: event_id
-            description: Unique identifier for a billing event
-          - name: user_id
-            description: ID of the user associated with the billing event
-          - name: event_type
-            description: Type of billing event
-          - name: amount
-            description: Amount associated with the billing event
-          - name: event_date
-            description: Date of the billing event
-          - name: load_timestamp
-            description: Timestamp when the record was loaded
-          - name: update_timestamp
-            description: Timestamp when the record was last updated
-          - name: source_system
-            description: Source system of the data
+          - name: Event_ID
+            tests:
+              - not_null
+          - name: User_ID
+          - name: Event_Type
+          - name: Amount
+          - name: Event_Date
 
 models:
   - name: bz_audit_log
-    description: Audit log for bronze layer transformations
+    description: "Audit log for tracking bronze layer transformations"
     columns:
       - name: record_id
-        description: Unique identifier for the audit record
+        description: "Unique identifier for the audit record"
+        tests:
+          - unique
+          - not_null
       - name: source_table
-        description: Source table being processed
+        description: "Source table being processed"
       - name: load_timestamp
-        description: Timestamp when the processing occurred
+        description: "Timestamp when the data was loaded"
       - name: processed_by
-        description: User or process that performed the processing
+        description: "User or process that processed the data"
       - name: processing_time
-        description: Time taken for processing in seconds
+        description: "Time taken to process the data in seconds"
       - name: status
-        description: Status of the processing (success/failure)
+        description: "Status of the processing (success/failure)"
 
   - name: bz_users
-    description: Bronze layer users data
+    description: "Bronze layer for users data"
     columns:
       - name: user_id
-        description: Unique identifier for a user
+        description: "Unique identifier for the user"
+        tests:
+          - unique
+          - not_null
       - name: user_name
-        description: Name of the user
+        description: "Name of the user"
       - name: email
-        description: Email address of the user
+        description: "Email address of the user"
       - name: company
-        description: Company the user belongs to
+        description: "Company the user belongs to"
       - name: plan_type
-        description: Type of plan the user has
+        description: "Type of plan the user has"
       - name: load_timestamp
-        description: Timestamp when the record was loaded
+        description: "Timestamp when the data was loaded"
       - name: update_timestamp
-        description: Timestamp when the record was last updated
+        description: "Timestamp when the data was last updated"
       - name: source_system
-        description: Source system of the data
+        description: "Source system from which the data was extracted"
 
   - name: bz_meetings
-    description: Bronze layer meetings data
+    description: "Bronze layer for meetings data"
     columns:
       - name: meeting_id
-        description: Unique identifier for a meeting
+        description: "Unique identifier for the meeting"
+        tests:
+          - unique
+          - not_null
       - name: host_id
-        description: ID of the user hosting the meeting
+        description: "ID of the user hosting the meeting"
       - name: meeting_topic
-        description: Topic of the meeting
+        description: "Topic of the meeting"
       - name: start_time
-        description: Start time of the meeting
+        description: "Start time of the meeting"
       - name: end_time
-        description: End time of the meeting
+        description: "End time of the meeting"
       - name: duration_minutes
-        description: Duration of the meeting in minutes
+        description: "Duration of the meeting in minutes"
       - name: load_timestamp
-        description: Timestamp when the record was loaded
+        description: "Timestamp when the data was loaded"
       - name: update_timestamp
-        description: Timestamp when the record was last updated
+        description: "Timestamp when the data was last updated"
       - name: source_system
-        description: Source system of the data
+        description: "Source system from which the data was extracted"
 
   - name: bz_participants
-    description: Bronze layer participants data
+    description: "Bronze layer for participants data"
     columns:
       - name: participant_id
-        description: Unique identifier for a participant
+        description: "Unique identifier for the participant"
+        tests:
+          - not_null
       - name: meeting_id
-        description: ID of the meeting
+        description: "ID of the meeting the participant attended"
       - name: user_id
-        description: ID of the user participating
+        description: "ID of the user who participated"
       - name: join_time
-        description: Time when the participant joined the meeting
+        description: "Time when the participant joined the meeting"
       - name: leave_time
-        description: Time when the participant left the meeting
+        description: "Time when the participant left the meeting"
       - name: load_timestamp
-        description: Timestamp when the record was loaded
+        description: "Timestamp when the data was loaded"
       - name: update_timestamp
-        description: Timestamp when the record was last updated
+        description: "Timestamp when the data was last updated"
       - name: source_system
-        description: Source system of the data
+        description: "Source system from which the data was extracted"
 
   - name: bz_feature_usage
-    description: Bronze layer feature usage data
+    description: "Bronze layer for feature usage data"
     columns:
       - name: usage_id
-        description: Unique identifier for a feature usage record
+        description: "Unique identifier for the feature usage"
+        tests:
+          - unique
+          - not_null
       - name: meeting_id
-        description: ID of the meeting
+        description: "ID of the meeting where the feature was used"
       - name: feature_name
-        description: Name of the feature used
+        description: "Name of the feature used"
       - name: usage_count
-        description: Count of feature usage
+        description: "Number of times the feature was used"
       - name: usage_date
-        description: Date of feature usage
+        description: "Date when the feature was used"
       - name: load_timestamp
-        description: Timestamp when the record was loaded
+        description: "Timestamp when the data was loaded"
       - name: update_timestamp
-        description: Timestamp when the record was last updated
+        description: "Timestamp when the data was last updated"
       - name: source_system
-        description: Source system of the data
+        description: "Source system from which the data was extracted"
 
   - name: bz_webinars
-    description: Bronze layer webinars data
+    description: "Bronze layer for webinars data"
     columns:
       - name: webinar_id
-        description: Unique identifier for a webinar
+        description: "Unique identifier for the webinar"
+        tests:
+          - unique
+          - not_null
       - name: host_id
-        description: ID of the user hosting the webinar
+        description: "ID of the user hosting the webinar"
       - name: webinar_topic
-        description: Topic of the webinar
+        description: "Topic of the webinar"
       - name: start_time
-        description: Start time of the webinar
+        description: "Start time of the webinar"
       - name: end_time
-        description: End time of the webinar
+        description: "End time of the webinar"
       - name: registrants
-        description: Number of registrants for the webinar
+        description: "Number of registrants for the webinar"
       - name: load_timestamp
-        description: Timestamp when the record was loaded
+        description: "Timestamp when the data was loaded"
       - name: update_timestamp
-        description: Timestamp when the record was last updated
+        description: "Timestamp when the data was last updated"
       - name: source_system
-        description: Source system of the data
+        description: "Source system from which the data was extracted"
 
   - name: bz_support_tickets
-    description: Bronze layer support tickets data
+    description: "Bronze layer for support tickets data"
     columns:
       - name: ticket_id
-        description: Unique identifier for a support ticket
+        description: "Unique identifier for the support ticket"
+        tests:
+          - unique
+          - not_null
       - name: user_id
-        description: ID of the user who created the ticket
+        description: "ID of the user who created the ticket"
       - name: ticket_type
-        description: Type of the support ticket
+        description: "Type of the support ticket"
       - name: resolution_status
-        description: Status of ticket resolution
+        description: "Current status of the ticket resolution"
       - name: open_date
-        description: Date when the ticket was opened
+        description: "Date when the ticket was opened"
       - name: load_timestamp
-        description: Timestamp when the record was loaded
+        description: "Timestamp when the data was loaded"
       - name: update_timestamp
-        description: Timestamp when the record was last updated
+        description: "Timestamp when the data was last updated"
       - name: source_system
-        description: Source system of the data
+        description: "Source system from which the data was extracted"
 
   - name: bz_licenses
-    description: Bronze layer licenses data
+    description: "Bronze layer for licenses data"
     columns:
       - name: license_id
-        description: Unique identifier for a license
+        description: "Unique identifier for the license"
+        tests:
+          - unique
+          - not_null
       - name: license_type
-        description: Type of license
+        description: "Type of the license"
       - name: assigned_to_user_id
-        description: ID of the user the license is assigned to
+        description: "ID of the user the license is assigned to"
       - name: start_date
-        description: Start date of the license
+        description: "Start date of the license"
       - name: end_date
-        description: End date of the license
+        description: "End date of the license"
       - name: load_timestamp
-        description: Timestamp when the record was loaded
+        description: "Timestamp when the data was loaded"
       - name: update_timestamp
-        description: Timestamp when the record was last updated
+        description: "Timestamp when the data was last updated"
       - name: source_system
-        description: Source system of the data
+        description: "Source system from which the data was extracted"
 
   - name: bz_billing_events
-    description: Bronze layer billing events data
+    description: "Bronze layer for billing events data"
     columns:
       - name: event_id
-        description: Unique identifier for a billing event
+        description: "Unique identifier for the billing event"
+        tests:
+          - unique
+          - not_null
       - name: user_id
-        description: ID of the user associated with the billing event
+        description: "ID of the user associated with the billing event"
       - name: event_type
-        description: Type of billing event
+        description: "Type of the billing event"
       - name: amount
-        description: Amount associated with the billing event
+        description: "Amount associated with the billing event"
       - name: event_date
-        description: Date of the billing event
+        description: "Date of the billing event"
       - name: load_timestamp
-        description: Timestamp when the record was loaded
+        description: "Timestamp when the data was loaded"
       - name: update_timestamp
-        description: Timestamp when the record was last updated
+        description: "Timestamp when the data was last updated"
       - name: source_system
-        description: Source system of the data
+        description: "Source system from which the data was extracted"
