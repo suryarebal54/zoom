@@ -1,35 +1,30 @@
-{{ config(
-    materialized='table',
-    schema='bronze'
-) }}
+{{config(
+  materialized = 'table',
+  pre_hook="{{ log_audit_start('licenses') }}",
+  post_hook="{{ log_audit_end('licenses') }}"
+)}}
 
 WITH source_data AS (
-    SELECT
-        license_id,
-        license_type,
-        assigned_to_user_id,
-        start_date,
-        end_date,
-        load_timestamp,
-        update_timestamp,
-        source_system
-    FROM {{ source('raw', 'licenses') }}
+  SELECT
+    License_ID,
+    License_Type,
+    Assigned_To_User_ID,
+    Start_Date,
+    End_Date
+  FROM {{ source('zoom', 'licenses') }}
 ),
 
-validated_data AS (
-    SELECT
-        -- Primary fields
-        TRIM(license_id) AS license_id,
-        TRIM(license_type) AS license_type,
-        TRIM(assigned_to_user_id) AS assigned_to_user_id,
-        start_date,
-        end_date,
-        
-        -- Metadata fields
-        COALESCE(load_timestamp, CURRENT_TIMESTAMP()) AS load_timestamp,
-        COALESCE(update_timestamp, CURRENT_TIMESTAMP()) AS update_timestamp,
-        COALESCE(source_system, 'ZOOM_PLATFORM') AS source_system
-    FROM source_data
+final AS (
+  SELECT
+    License_ID as license_id,
+    License_Type as license_type,
+    Assigned_To_User_ID as assigned_to_user_id,
+    Start_Date as start_date,
+    End_Date as end_date,
+    CURRENT_TIMESTAMP() as load_timestamp,
+    CURRENT_TIMESTAMP() as update_timestamp,
+    'ZOOM_PLATFORM' as source_system
+  FROM source_data
 )
 
-SELECT * FROM validated_data
+SELECT * FROM final
