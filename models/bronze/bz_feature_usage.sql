@@ -1,35 +1,30 @@
-{{ config(
-    materialized='table',
-    schema='bronze'
-) }}
+{{config(
+  materialized = 'table',
+  pre_hook="{{ log_audit_start('feature_usage') }}",
+  post_hook="{{ log_audit_end('feature_usage') }}"
+)}}
 
 WITH source_data AS (
-    SELECT
-        usage_id,
-        meeting_id,
-        feature_name,
-        usage_count,
-        usage_date,
-        load_timestamp,
-        update_timestamp,
-        source_system
-    FROM {{ source('raw', 'feature_usage') }}
+  SELECT
+    Usage_ID,
+    Meeting_ID,
+    Feature_Name,
+    Usage_Count,
+    Usage_Date
+  FROM {{ source('zoom', 'feature_usage') }}
 ),
 
-validated_data AS (
-    SELECT
-        -- Primary fields
-        TRIM(usage_id) AS usage_id,
-        TRIM(meeting_id) AS meeting_id,
-        TRIM(feature_name) AS feature_name,
-        usage_count,
-        usage_date,
-        
-        -- Metadata fields
-        COALESCE(load_timestamp, CURRENT_TIMESTAMP()) AS load_timestamp,
-        COALESCE(update_timestamp, CURRENT_TIMESTAMP()) AS update_timestamp,
-        COALESCE(source_system, 'ZOOM_PLATFORM') AS source_system
-    FROM source_data
+final AS (
+  SELECT
+    Usage_ID as usage_id,
+    Meeting_ID as meeting_id,
+    Feature_Name as feature_name,
+    Usage_Count as usage_count,
+    Usage_Date as usage_date,
+    CURRENT_TIMESTAMP() as load_timestamp,
+    CURRENT_TIMESTAMP() as update_timestamp,
+    'ZOOM_PLATFORM' as source_system
+  FROM source_data
 )
 
-SELECT * FROM validated_data
+SELECT * FROM final
