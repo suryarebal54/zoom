@@ -1,18 +1,35 @@
 {{config(
     materialized='table',
-    pre_hook="{% set start_time = modules.datetime.datetime.now() %} {{ log_audit_start('support_tickets') }}",
-    post_hook="{{ log_audit_end('support_tickets', 'timestamp\'' + start_time.strftime('%Y-%m-%d %H:%M:%S') + '\'') }}"
+    schema='bronze'
 )}}
 
-SELECT
-    -- Source columns
-    Ticket_ID as ticket_id,
-    User_ID as user_id,
-    Ticket_Type as ticket_type,
-    Resolution_Status as resolution_status,
-    Open_Date as open_date,
-    -- Metadata columns
-    CURRENT_TIMESTAMP() as load_timestamp,
-    CURRENT_TIMESTAMP() as update_timestamp,
-    '{{ var("source_system") }}' as source_system
-FROM {{ source('raw', 'support_tickets') }}
+WITH source_data AS (
+    SELECT
+        ticket_id,
+        user_id,
+        ticket_type,
+        resolution_status,
+        open_date,
+        load_timestamp,
+        update_timestamp,
+        source_system
+    FROM {{ source('raw', 'support_tickets') }}
+),
+
+validated_data AS (
+    SELECT
+        -- Primary fields
+        COALESCE(ticket_id, 'UNKNOWN') AS ticket_id,
+        user_id,
+        ticket_type,
+        resolution_status,
+        open_date,
+        
+        -- Metadata fields
+        COALESCE(load_timestamp, CURRENT_TIMESTAMP()) AS load_timestamp,
+        COALESCE(update_timestamp, CURRENT_TIMESTAMP()) AS update_timestamp,
+        COALESCE(source_system, 'ZOOM_PLATFORM') AS source_system
+    FROM source_data
+)
+
+SELECT * FROM validated_data
