@@ -1,8 +1,8 @@
-name: 'zoom_analytics'
+name: 'Analytics'
 version: '1.0.0'
 config-version: 2
 
-profile: 'default'
+profile: 'Analytics'
 
 model-paths: ["models"]
 macro-paths: ["macros"]
@@ -14,14 +14,11 @@ target-path: "target"
 clean-targets: ["target"]
 
 models:
-  zoom_analytics:
+  Analytics:
     bronze:
       +materialized: table
       +schema: bronze
-      audit:
-        +schema: bronze
-        +materialized: table
-        +tags: ["audit"]
-
-vars:
-  source_system: 'ZOOM_PLATFORM'
+      +pre-hook:
+        - "{{ logging.log_model_start() }}"
+      +post-hook:
+        - "{{ logging.log_model_end() }}"
