@@ -1,30 +1,19 @@
-{{config(
-  materialized = 'table',
-  pre_hook="{{ log_audit_start('participants') }}",
-  post_hook="{{ log_audit_end('participants') }}"
-)}}
+{{
+  config(
+    materialized = 'table',
+    pre_hook="{{ log_model_start('bz_participants') }}",
+    post_hook="{{ log_model_end('bz_participants') }}"
+  )
+}}
 
-WITH source_data AS (
-  SELECT
-    Participant_ID,
-    Meeting_ID,
-    User_ID,
-    Join_Time,
-    Leave_Time
-  FROM {{ source('zoom', 'participants') }}
-),
-
-final AS (
-  SELECT
-    Participant_ID as participant_id,
-    Meeting_ID as meeting_id,
-    User_ID as user_id,
-    Join_Time as join_time,
-    Leave_Time as leave_time,
-    CURRENT_TIMESTAMP() as load_timestamp,
-    CURRENT_TIMESTAMP() as update_timestamp,
-    'ZOOM_PLATFORM' as source_system
-  FROM source_data
-)
-
-SELECT * FROM final
+-- Extract and transform participants data from raw to bronze
+select
+  participant_id,
+  meeting_id,
+  user_id,
+  join_time,
+  leave_time,
+  current_timestamp() as load_timestamp,
+  current_timestamp() as update_timestamp,
+  'ZOOM_PLATFORM' as source_system
+from {{ source('raw', 'participants') }}
