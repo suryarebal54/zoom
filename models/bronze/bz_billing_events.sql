@@ -1,35 +1,20 @@
 {{config(
     materialized='table',
-    schema='bronze'
+    pre_hook="{{ log_audit_start('billing_events') }}",
+    post_hook="{{ log_audit_end('billing_events') }}"
 )}}
 
-WITH source_data AS (
-    SELECT
-        event_id,
-        user_id,
-        event_type,
-        amount,
-        event_date,
-        load_timestamp,
-        update_timestamp,
-        source_system
-    FROM {{ source('raw', 'billing_events') }}
-),
-
-validated_data AS (
-    SELECT
-        -- Primary fields
-        COALESCE(event_id, 'UNKNOWN') AS event_id,
-        user_id,
-        event_type,
-        amount,
-        event_date,
-        
-        -- Metadata fields
-        COALESCE(load_timestamp, CURRENT_TIMESTAMP()) AS load_timestamp,
-        COALESCE(update_timestamp, CURRENT_TIMESTAMP()) AS update_timestamp,
-        COALESCE(source_system, 'ZOOM_PLATFORM') AS source_system
-    FROM source_data
-)
-
-SELECT * FROM validated_data
+-- Extract and transform billing events data from source to bronze layer
+select
+    -- Business data fields
+    event_id,
+    user_id,
+    event_type,
+    amount,
+    event_date,
+    
+    -- Metadata fields
+    current_timestamp() as load_timestamp,
+    current_timestamp() as update_timestamp,
+    'ZOOM_PLATFORM' as source_system
+from {{ source('zoom', 'billing_events') }}
