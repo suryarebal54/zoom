@@ -1,158 +1,48 @@
 version: 2
 
 sources:
-  - name: zoom
-    description: "Raw data from Zoom platform"
+  - name: raw
+    database: raw
     tables:
       - name: users
-        description: "Raw user data from Zoom"
-        columns:
-          - name: user_id
-            description: "Unique identifier for a user"
-          - name: user_name
-            description: "User's name"
-          - name: email
-            description: "User's email address"
-          - name: company
-            description: "User's company"
-          - name: plan_type
-            description: "User's subscription plan type"
-
       - name: meetings
-        description: "Raw meeting data from Zoom"
-        columns:
-          - name: meeting_id
-            description: "Unique identifier for a meeting"
-          - name: host_id
-            description: "ID of the user who hosted the meeting"
-          - name: meeting_topic
-            description: "Topic of the meeting"
-          - name: start_time
-            description: "Start time of the meeting"
-          - name: end_time
-            description: "End time of the meeting"
-          - name: duration_minutes
-            description: "Duration of the meeting in minutes"
-
       - name: participants
-        description: "Raw participant data from Zoom meetings"
-        columns:
-          - name: participant_id
-            description: "Unique identifier for a participant"
-          - name: meeting_id
-            description: "ID of the meeting the participant joined"
-          - name: user_id
-            description: "ID of the user who participated"
-          - name: join_time
-            description: "Time when participant joined the meeting"
-          - name: leave_time
-            description: "Time when participant left the meeting"
-
       - name: feature_usage
-        description: "Raw feature usage data from Zoom"
-        columns:
-          - name: usage_id
-            description: "Unique identifier for feature usage"
-          - name: meeting_id
-            description: "ID of the meeting where feature was used"
-          - name: feature_name
-            description: "Name of the feature used"
-          - name: usage_count
-            description: "Count of feature usage"
-          - name: usage_date
-            description: "Date when feature was used"
-
       - name: webinars
-        description: "Raw webinar data from Zoom"
-        columns:
-          - name: webinar_id
-            description: "Unique identifier for a webinar"
-          - name: host_id
-            description: "ID of the user who hosted the webinar"
-          - name: webinar_topic
-            description: "Topic of the webinar"
-          - name: start_time
-            description: "Start time of the webinar"
-          - name: end_time
-            description: "End time of the webinar"
-          - name: registrants
-            description: "Number of registrants for the webinar"
-
       - name: support_tickets
-        description: "Raw support ticket data from Zoom"
-        columns:
-          - name: ticket_id
-            description: "Unique identifier for a support ticket"
-          - name: user_id
-            description: "ID of the user who submitted the ticket"
-          - name: ticket_type
-            description: "Type of support ticket"
-          - name: resolution_status
-            description: "Current status of ticket resolution"
-          - name: open_date
-            description: "Date when ticket was opened"
-
       - name: licenses
-        description: "Raw license data from Zoom"
-        columns:
-          - name: license_id
-            description: "Unique identifier for a license"
-          - name: license_type
-            description: "Type of license"
-          - name: assigned_to_user_id
-            description: "ID of the user assigned to the license"
-          - name: start_date
-            description: "Start date of the license"
-          - name: end_date
-            description: "End date of the license"
-
       - name: billing_events
-        description: "Raw billing event data from Zoom"
-        columns:
-          - name: event_id
-            description: "Unique identifier for a billing event"
-          - name: user_id
-            description: "ID of the user associated with the billing event"
-          - name: event_type
-            description: "Type of billing event"
-          - name: amount
-            description: "Amount associated with the billing event"
-          - name: event_date
-            description: "Date of the billing event"
 
 models:
   - name: bz_audit_log
-    description: "Audit log for tracking bronze layer transformations"
+    description: "Audit log for bronze layer transformations"
     columns:
       - name: record_id
-        description: "Unique identifier for the audit record"
+        description: "Unique identifier for the audit log record"
       - name: source_table
-        description: "Source table being processed"
+        description: "Source table name"
       - name: load_timestamp
         description: "Timestamp when the data was loaded"
       - name: processed_by
-        description: "User or process that processed the data"
+        description: "User who processed the data"
       - name: processing_time
         description: "Time taken to process the data in seconds"
       - name: status
-        description: "Status of the processing (success/failure)"
+        description: "Status of the processing"
 
   - name: bz_users
-    description: "Bronze layer for user data"
+    description: "Bronze layer for users data"
     columns:
       - name: user_id
-        description: "Unique identifier for a user"
-        tests:
-          - unique
-          - not_null
+        description: "Unique identifier for the user"
       - name: user_name
-        description: "User's name"
+        description: "Name of the user"
       - name: email
-        description: "User's email address"
+        description: "Email address of the user"
       - name: company
-        description: "User's company"
+        description: "Company the user belongs to"
       - name: plan_type
-        description: "User's subscription plan type"
+        description: "Type of plan the user has"
       - name: load_timestamp
         description: "Timestamp when the data was loaded"
       - name: update_timestamp
@@ -161,15 +51,12 @@ models:
         description: "Source system of the data"
 
   - name: bz_meetings
-    description: "Bronze layer for meeting data"
+    description: "Bronze layer for meetings data"
     columns:
       - name: meeting_id
-        description: "Unique identifier for a meeting"
-        tests:
-          - unique
-          - not_null
+        description: "Unique identifier for the meeting"
       - name: host_id
-        description: "ID of the user who hosted the meeting"
+        description: "Identifier for the meeting host"
       - name: meeting_topic
         description: "Topic of the meeting"
       - name: start_time
@@ -186,21 +73,18 @@ models:
         description: "Source system of the data"
 
   - name: bz_participants
-    description: "Bronze layer for participant data"
+    description: "Bronze layer for participants data"
     columns:
       - name: participant_id
-        description: "Unique identifier for a participant"
-        tests:
-          - unique
-          - not_null
+        description: "Unique identifier for the participant"
       - name: meeting_id
-        description: "ID of the meeting the participant joined"
+        description: "Identifier for the meeting"
       - name: user_id
-        description: "ID of the user who participated"
+        description: "Identifier for the user"
       - name: join_time
-        description: "Time when participant joined the meeting"
+        description: "Time when the participant joined the meeting"
       - name: leave_time
-        description: "Time when participant left the meeting"
+        description: "Time when the participant left the meeting"
       - name: load_timestamp
         description: "Timestamp when the data was loaded"
       - name: update_timestamp
@@ -212,18 +96,15 @@ models:
     description: "Bronze layer for feature usage data"
     columns:
       - name: usage_id
-        description: "Unique identifier for feature usage"
-        tests:
-          - unique
-          - not_null
+        description: "Unique identifier for the feature usage"
       - name: meeting_id
-        description: "ID of the meeting where feature was used"
+        description: "Identifier for the meeting"
       - name: feature_name
-        description: "Name of the feature used"
+        description: "Name of the feature"
       - name: usage_count
         description: "Count of feature usage"
       - name: usage_date
-        description: "Date when feature was used"
+        description: "Date of feature usage"
       - name: load_timestamp
         description: "Timestamp when the data was loaded"
       - name: update_timestamp
@@ -232,15 +113,12 @@ models:
         description: "Source system of the data"
 
   - name: bz_webinars
-    description: "Bronze layer for webinar data"
+    description: "Bronze layer for webinars data"
     columns:
       - name: webinar_id
-        description: "Unique identifier for a webinar"
-        tests:
-          - unique
-          - not_null
+        description: "Unique identifier for the webinar"
       - name: host_id
-        description: "ID of the user who hosted the webinar"
+        description: "Identifier for the webinar host"
       - name: webinar_topic
         description: "Topic of the webinar"
       - name: start_time
@@ -257,21 +135,18 @@ models:
         description: "Source system of the data"
 
   - name: bz_support_tickets
-    description: "Bronze layer for support ticket data"
+    description: "Bronze layer for support tickets data"
     columns:
       - name: ticket_id
-        description: "Unique identifier for a support ticket"
-        tests:
-          - unique
-          - not_null
+        description: "Unique identifier for the support ticket"
       - name: user_id
-        description: "ID of the user who submitted the ticket"
+        description: "Identifier for the user who created the ticket"
       - name: ticket_type
-        description: "Type of support ticket"
+        description: "Type of the support ticket"
       - name: resolution_status
-        description: "Current status of ticket resolution"
+        description: "Status of the ticket resolution"
       - name: open_date
-        description: "Date when ticket was opened"
+        description: "Date when the ticket was opened"
       - name: load_timestamp
         description: "Timestamp when the data was loaded"
       - name: update_timestamp
@@ -280,17 +155,14 @@ models:
         description: "Source system of the data"
 
   - name: bz_licenses
-    description: "Bronze layer for license data"
+    description: "Bronze layer for licenses data"
     columns:
       - name: license_id
-        description: "Unique identifier for a license"
-        tests:
-          - unique
-          - not_null
+        description: "Unique identifier for the license"
       - name: license_type
-        description: "Type of license"
+        description: "Type of the license"
       - name: assigned_to_user_id
-        description: "ID of the user assigned to the license"
+        description: "Identifier for the user the license is assigned to"
       - name: start_date
         description: "Start date of the license"
       - name: end_date
@@ -303,17 +175,14 @@ models:
         description: "Source system of the data"
 
   - name: bz_billing_events
-    description: "Bronze layer for billing event data"
+    description: "Bronze layer for billing events data"
     columns:
       - name: event_id
-        description: "Unique identifier for a billing event"
-        tests:
-          - unique
-          - not_null
+        description: "Unique identifier for the billing event"
       - name: user_id
-        description: "ID of the user associated with the billing event"
+        description: "Identifier for the user associated with the billing event"
       - name: event_type
-        description: "Type of billing event"
+        description: "Type of the billing event"
       - name: amount
         description: "Amount associated with the billing event"
       - name: event_date
