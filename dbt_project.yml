@@ -1,4 +1,4 @@
-name: 'zoom'
+name: 'zoom_analytics'
 version: '1.0.0'
 config-version: 2
 
@@ -13,16 +13,11 @@ analysis-paths: ["analyses"]
 target-path: "target"
 clean-targets: ["target"]
 
-vars:
-  source_schema: 'RAW'
-  target_schema: 'BRONZE'
-
 models:
-  zoom:
+  zoom_analytics:
     bronze:
       +materialized: table
       +schema: bronze
-      +pre-hook:
-        - "{{ audit_start_hook() }}"
-      +post-hook:
-        - "{{ audit_end_hook() }}"
+      audit:
+        +schema: bronze
+        +tags: ["audit"]
