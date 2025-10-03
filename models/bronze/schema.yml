@@ -56,3 +56,51 @@ models:
         description: "Timestamp when the record was last updated"
       - name: source_system
         description: "Source system the data was extracted from"
+
+  - name: bz_meetings
+    description: "Bronze layer for meetings data"
+    columns:
+      - name: meeting_id
+        description: "Unique identifier for the meeting"
+        tests:
+          - unique
+          - not_null
+      - name: host_id
+        description: "ID of the user hosting the meeting"
+      - name: meeting_topic
+        description: "Topic of the meeting"
+      - name: start_time
+        description: "Start time of the meeting"
+      - name: end_time
+        description: "End time of the meeting"
+      - name: duration_minutes
+        description: "Duration of the meeting in minutes"
+      - name: load_timestamp
+        description: "Timestamp when the record was loaded"
+      - name: update_timestamp
+        description: "Timestamp when the record was last updated"
+      - name: source_system
+        description: "Source system the data was extracted from"
+
+  - name: bz_participants
+    description: "Bronze layer for participants data"
+    columns:
+      - name: participant_id
+        description: "Unique identifier for the participant"
+        tests:
+          - unique
+          - not_null
+      - name: meeting_id
+        description: "ID of the meeting the participant attended"
+      - name: user_id
+        description: "ID of the user who participated"
+      - name: join_time
+        description: "Time when the participant joined the meeting"
+      - name: leave_time
+        description: "Time when the participant left the meeting"
+      - name: load_timestamp
+        description: "Timestamp when the record was loaded"
+      - name: update_timestamp
+        description: "Timestamp when the record was last updated"
+      - name: source_system
+        description: "Source system the data was extracted from"
