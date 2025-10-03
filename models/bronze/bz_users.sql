@@ -1,30 +1,19 @@
-{{config(
-  materialized = 'table',
-  pre_hook="{{ log_audit_start('users') }}",
-  post_hook="{{ log_audit_end('users') }}"
-)}}
+{{
+  config(
+    materialized = 'table',
+    pre_hook="{{ log_model_start('bz_users') }}",
+    post_hook="{{ log_model_end('bz_users') }}"
+  )
+}}
 
-WITH source_data AS (
-  SELECT
-    User_ID,
-    User_Name,
-    Email,
-    Company,
-    Plan_Type
-  FROM {{ source('zoom', 'users') }}
-),
-
-final AS (
-  SELECT
-    User_ID as user_id,
-    User_Name as user_name,
-    Email as email,
-    Company as company,
-    Plan_Type as plan_type,
-    CURRENT_TIMESTAMP() as load_timestamp,
-    CURRENT_TIMESTAMP() as update_timestamp,
-    'ZOOM_PLATFORM' as source_system
-  FROM source_data
-)
-
-SELECT * FROM final
+-- Extract and transform users data from raw to bronze
+select
+  user_id,
+  user_name,
+  email,
+  company,
+  plan_type,
+  current_timestamp() as load_timestamp,
+  current_timestamp() as update_timestamp,
+  'ZOOM_PLATFORM' as source_system
+from {{ source('raw', 'users') }}
