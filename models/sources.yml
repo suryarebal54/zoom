@@ -1,0 +1,64 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: raw
+    tables:
+      - name: users
+        columns:
+          - name: User_ID
+          - name: User_Name
+          - name: Email
+          - name: Company
+          - name: Plan_Type
+      - name: meetings
+        columns:
+          - name: Meeting_ID
+          - name: Host_ID
+          - name: Meeting_Topic
+          - name: Start_Time
+          - name: End_Time
+          - name: Duration_Minutes
+      - name: participants
+        columns:
+          - name: Participant_ID
+          - name: Meeting_ID
+          - name: User_ID
+          - name: Join_Time
+          - name: Leave_Time
+      - name: feature_usage
+        columns:
+          - name: Usage_ID
+          - name: Meeting_ID
+          - name: Feature_Name
+          - name: Usage_Count
+          - name: Usage_Date
+      - name: webinars
+        columns:
+          - name: Webinar_ID
+          - name: Host_ID
+          - name: Webinar_Topic
+          - name: Start_Time
+          - name: End_Time
+          - name: Registrants
+      - name: support_tickets
+        columns:
+          - name: Ticket_ID
+          - name: User_ID
+          - name: Ticket_Type
+          - name: Resolution_Status
+          - name: Open_Date
+      - name: licenses
+        columns:
+          - name: License_ID
+          - name: License_Type
+          - name: Assigned_To_User_ID
+          - name: Start_Date
+          - name: End_Date
+      - name: billing_events
+        columns:
+          - name: Event_ID
+          - name: User_ID
+          - name: Event_Type
+          - name: Amount
+          - name: Event_Date
