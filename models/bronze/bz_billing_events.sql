@@ -1,20 +1,16 @@
 {{config(
-    materialized='table',
-    pre_hook="{{ log_audit_start('billing_events') }}",
-    post_hook="{{ log_audit_end('billing_events') }}"
+  materialized = 'table',
+  pre_hook="{% if this.identifier != 'bz_audit_log' %} {{ log_table_load('billing_events', 'STARTED') }} {% endif %}",
+  post_hook="{% if this.identifier != 'bz_audit_log' %} {{ log_table_load('billing_events', 'COMPLETED') }} {% endif %}"
 )}}
 
--- Extract and transform billing events data from source to bronze layer
-select
-    -- Business data fields
-    event_id,
-    user_id,
-    event_type,
-    amount,
-    event_date,
-    
-    -- Metadata fields
-    current_timestamp() as load_timestamp,
-    current_timestamp() as update_timestamp,
-    'ZOOM_PLATFORM' as source_system
-from {{ source('zoom', 'billing_events') }}
+SELECT
+  event_id,
+  user_id,
+  event_type,
+  amount,
+  event_date,
+  CURRENT_TIMESTAMP() as load_timestamp,
+  CURRENT_TIMESTAMP() as update_timestamp,
+  '{{ var("source_system") }}' as source_system
+FROM {{ source('raw', 'billing_events') }}
