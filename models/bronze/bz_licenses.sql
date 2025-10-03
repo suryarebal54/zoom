@@ -1,34 +1,18 @@
-{{ config(
+{{config(
     materialized='table',
-    schema='bronze'
-) }}
+    pre_hook="{% set start_time = modules.datetime.datetime.now() %} {{ log_audit_start('licenses') }}",
+    post_hook="{{ log_audit_end('licenses', 'timestamp\'' + start_time.strftime('%Y-%m-%d %H:%M:%S') + '\'') }}"
+)}}
 
-with source_data as (
-    select
-        license_id,
-        license_type,
-        assigned_to_user_id,
-        start_date,
-        end_date,
-        load_timestamp,
-        update_timestamp,
-        source_system
-    from {{ source('raw', 'licenses') }}
-),
-
-final as (
-    select
-        -- Direct mappings from source
-        license_id,
-        license_type,
-        assigned_to_user_id,
-        start_date,
-        end_date,
-        -- Metadata columns
-        load_timestamp,
-        current_timestamp() as update_timestamp,
-        coalesce(source_system, 'ZOOM_PLATFORM') as source_system
-    from source_data
-)
-
-select * from final
+SELECT
+    -- Source columns
+    License_ID as license_id,
+    License_Type as license_type,
+    Assigned_To_User_ID as assigned_to_user_id,
+    Start_Date as start_date,
+    End_Date as end_date,
+    -- Metadata columns
+    CURRENT_TIMESTAMP() as load_timestamp,
+    CURRENT_TIMESTAMP() as update_timestamp,
+    '{{ var("source_system") }}' as source_system
+FROM {{ source('raw', 'licenses') }}
