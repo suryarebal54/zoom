@@ -1,0 +1,24 @@
+name: 'zoom'
+version: '1.0.0'
+config-version: 2
+
+profile: 'Analytics'
+
+model-paths: ["models"]
+macro-paths: ["macros"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+analysis-paths: ["analyses"]
+
+target-path: "target"
+clean-targets: ["target"]
+
+models:
+  zoom:
+    bronze:
+      +materialized: table
+      +schema: bronze
+      +pre-hook:
+        - "{{ log_model_start() }}"
+      +post-hook:
+        - "{{ log_model_end() }}"
