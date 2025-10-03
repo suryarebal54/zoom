@@ -1,30 +1,19 @@
-{{config(
-  materialized = 'table',
-  pre_hook="{{ log_audit_start('licenses') }}",
-  post_hook="{{ log_audit_end('licenses') }}"
-)}}
+{{
+  config(
+    materialized = 'table',
+    pre_hook="{{ log_model_start('bz_licenses') }}",
+    post_hook="{{ log_model_end('bz_licenses') }}"
+  )
+}}
 
-WITH source_data AS (
-  SELECT
-    License_ID,
-    License_Type,
-    Assigned_To_User_ID,
-    Start_Date,
-    End_Date
-  FROM {{ source('zoom', 'licenses') }}
-),
-
-final AS (
-  SELECT
-    License_ID as license_id,
-    License_Type as license_type,
-    Assigned_To_User_ID as assigned_to_user_id,
-    Start_Date as start_date,
-    End_Date as end_date,
-    CURRENT_TIMESTAMP() as load_timestamp,
-    CURRENT_TIMESTAMP() as update_timestamp,
-    'ZOOM_PLATFORM' as source_system
-  FROM source_data
-)
-
-SELECT * FROM final
+-- Extract and transform licenses data from raw to bronze
+select
+  license_id,
+  license_type,
+  assigned_to_user_id,
+  start_date,
+  end_date,
+  current_timestamp() as load_timestamp,
+  current_timestamp() as update_timestamp,
+  'ZOOM_PLATFORM' as source_system
+from {{ source('raw', 'licenses') }}
