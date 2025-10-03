@@ -1,30 +1,19 @@
-{{config(
-  materialized = 'table',
-  pre_hook="{{ log_audit_start('support_tickets') }}",
-  post_hook="{{ log_audit_end('support_tickets') }}"
-)}}
+{{
+  config(
+    materialized = 'table',
+    pre_hook="{{ log_model_start('bz_support_tickets') }}",
+    post_hook="{{ log_model_end('bz_support_tickets') }}"
+  )
+}}
 
-WITH source_data AS (
-  SELECT
-    Ticket_ID,
-    User_ID,
-    Ticket_Type,
-    Resolution_Status,
-    Open_Date
-  FROM {{ source('zoom', 'support_tickets') }}
-),
-
-final AS (
-  SELECT
-    Ticket_ID as ticket_id,
-    User_ID as user_id,
-    Ticket_Type as ticket_type,
-    Resolution_Status as resolution_status,
-    Open_Date as open_date,
-    CURRENT_TIMESTAMP() as load_timestamp,
-    CURRENT_TIMESTAMP() as update_timestamp,
-    'ZOOM_PLATFORM' as source_system
-  FROM source_data
-)
-
-SELECT * FROM final
+-- Extract and transform support tickets data from raw to bronze
+select
+  ticket_id,
+  user_id,
+  ticket_type,
+  resolution_status,
+  open_date,
+  current_timestamp() as load_timestamp,
+  current_timestamp() as update_timestamp,
+  'ZOOM_PLATFORM' as source_system
+from {{ source('raw', 'support_tickets') }}
