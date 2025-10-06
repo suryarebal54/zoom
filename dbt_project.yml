@@ -18,7 +18,5 @@ models:
     bronze:
       +materialized: table
       +schema: bronze
-      +pre-hook:
-        - "{{ log_model_start() }}"
-      +post-hook:
-        - "{{ log_model_end() }}"
+      audit:
+        +schema: bronze
