@@ -2,6 +2,7 @@ version: 2
 
 sources:
   - name: raw
+    database: raw
     schema: raw
     tables:
       - name: users
@@ -15,14 +16,14 @@ sources:
 
 models:
   - name: bz_audit_log
-    description: "Audit log for tracking model execution"
+    description: "Audit log for tracking bronze layer transformations"
     columns:
       - name: record_id
-        description: "Unique identifier for the audit record"
+        description: "Unique identifier for the audit log record"
       - name: source_table
-        description: "Source table being processed"
+        description: "Source table name"
       - name: load_timestamp
-        description: "Timestamp when the record was loaded"
+        description: "Timestamp when the data was loaded"
       - name: processed_by
         description: "User who processed the data"
       - name: processing_time
@@ -44,9 +45,9 @@ models:
       - name: plan_type
         description: "Type of plan the user has"
       - name: load_timestamp
-        description: "Timestamp when the record was loaded"
+        description: "Timestamp when the data was loaded"
       - name: update_timestamp
-        description: "Timestamp when the record was last updated"
+        description: "Timestamp when the data was last updated"
       - name: source_system
         description: "Source system of the data"
 
@@ -56,7 +57,7 @@ models:
       - name: meeting_id
         description: "Unique identifier for the meeting"
       - name: host_id
-        description: "Identifier of the meeting host"
+        description: "ID of the user hosting the meeting"
       - name: meeting_topic
         description: "Topic of the meeting"
       - name: start_time
@@ -66,9 +67,9 @@ models:
       - name: duration_minutes
         description: "Duration of the meeting in minutes"
       - name: load_timestamp
-        description: "Timestamp when the record was loaded"
+        description: "Timestamp when the data was loaded"
       - name: update_timestamp
-        description: "Timestamp when the record was last updated"
+        description: "Timestamp when the data was last updated"
       - name: source_system
         description: "Source system of the data"
 
@@ -78,17 +79,17 @@ models:
       - name: participant_id
         description: "Unique identifier for the participant"
       - name: meeting_id
-        description: "Identifier of the meeting"
+        description: "ID of the meeting the participant attended"
       - name: user_id
-        description: "Identifier of the user"
+        description: "ID of the user who participated"
       - name: join_time
-        description: "Time when the participant joined"
+        description: "Time when the participant joined the meeting"
       - name: leave_time
-        description: "Time when the participant left"
+        description: "Time when the participant left the meeting"
       - name: load_timestamp
-        description: "Timestamp when the record was loaded"
+        description: "Timestamp when the data was loaded"
       - name: update_timestamp
-        description: "Timestamp when the record was last updated"
+        description: "Timestamp when the data was last updated"
       - name: source_system
         description: "Source system of the data"
 
@@ -96,19 +97,19 @@ models:
     description: "Bronze layer for feature usage data"
     columns:
       - name: usage_id
-        description: "Unique identifier for the usage record"
+        description: "Unique identifier for the feature usage"
       - name: meeting_id
-        description: "Identifier of the meeting"
+        description: "ID of the meeting where the feature was used"
       - name: feature_name
         description: "Name of the feature used"
       - name: usage_count
-        description: "Count of feature usage"
+        description: "Number of times the feature was used"
       - name: usage_date
-        description: "Date of feature usage"
+        description: "Date when the feature was used"
       - name: load_timestamp
-        description: "Timestamp when the record was loaded"
+        description: "Timestamp when the data was loaded"
       - name: update_timestamp
-        description: "Timestamp when the record was last updated"
+        description: "Timestamp when the data was last updated"
       - name: source_system
         description: "Source system of the data"
 
@@ -118,7 +119,7 @@ models:
       - name: webinar_id
         description: "Unique identifier for the webinar"
       - name: host_id
-        description: "Identifier of the webinar host"
+        description: "ID of the user hosting the webinar"
       - name: webinar_topic
         description: "Topic of the webinar"
       - name: start_time
@@ -128,9 +129,9 @@ models:
       - name: registrants
         description: "Number of registrants for the webinar"
       - name: load_timestamp
-        description: "Timestamp when the record was loaded"
+        description: "Timestamp when the data was loaded"
       - name: update_timestamp
-        description: "Timestamp when the record was last updated"
+        description: "Timestamp when the data was last updated"
       - name: source_system
         description: "Source system of the data"
 
@@ -138,19 +139,19 @@ models:
     description: "Bronze layer for support tickets data"
     columns:
       - name: ticket_id
-        description: "Unique identifier for the ticket"
+        description: "Unique identifier for the support ticket"
       - name: user_id
-        description: "Identifier of the user who created the ticket"
+        description: "ID of the user who created the ticket"
       - name: ticket_type
-        description: "Type of the ticket"
+        description: "Type of the support ticket"
       - name: resolution_status
-        description: "Status of ticket resolution"
+        description: "Current status of the ticket resolution"
       - name: open_date
         description: "Date when the ticket was opened"
       - name: load_timestamp
-        description: "Timestamp when the record was loaded"
+        description: "Timestamp when the data was loaded"
       - name: update_timestamp
-        description: "Timestamp when the record was last updated"
+        description: "Timestamp when the data was last updated"
       - name: source_system
         description: "Source system of the data"
 
@@ -162,15 +163,15 @@ models:
       - name: license_type
         description: "Type of the license"
       - name: assigned_to_user_id
-        description: "Identifier of the user the license is assigned to"
+        description: "ID of the user the license is assigned to"
       - name: start_date
         description: "Start date of the license"
       - name: end_date
         description: "End date of the license"
       - name: load_timestamp
-        description: "Timestamp when the record was loaded"
+        description: "Timestamp when the data was loaded"
       - name: update_timestamp
-        description: "Timestamp when the record was last updated"
+        description: "Timestamp when the data was last updated"
       - name: source_system
         description: "Source system of the data"
 
@@ -180,7 +181,7 @@ models:
       - name: event_id
         description: "Unique identifier for the billing event"
       - name: user_id
-        description: "Identifier of the user associated with the event"
+        description: "ID of the user associated with the billing event"
       - name: event_type
         description: "Type of the billing event"
       - name: amount
@@ -188,8 +189,8 @@ models:
       - name: event_date
         description: "Date of the billing event"
       - name: load_timestamp
-        description: "Timestamp when the record was loaded"
+        description: "Timestamp when the data was loaded"
       - name: update_timestamp
-        description: "Timestamp when the record was last updated"
+        description: "Timestamp when the data was last updated"
       - name: source_system
         description: "Source system of the data"
