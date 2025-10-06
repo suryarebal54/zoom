@@ -1,43 +1,29 @@
 {{config(
-  materialized = 'table',
-  schema = 'bronze'
+    materialized='table',
+    pre_hook="{{ log_audit_start('users') }}",
+    post_hook="{{ log_audit_end('users') }}"
 )}}
 
-WITH source_data AS (
-  SELECT
-    user_id,
-    user_name,
-    email,
-    company,
-    plan_type,
-    load_timestamp,
-    update_timestamp,
-    source_system
-  FROM {{ source('raw', 'users') }}
-),
-
-validated_data AS (
-  SELECT
-    -- Primary fields
-    user_id,
-    user_name,
-    email,
-    company,
-    plan_type,
-    -- Metadata fields
-    load_timestamp,
-    update_timestamp,
-    source_system
-  FROM source_data
+with source_data as (
+    select
+        user_id,
+        user_name,
+        email,
+        company,
+        plan_type,
+        load_timestamp,
+        update_timestamp,
+        source_system
+    from {{ source('raw', 'users') }}
 )
 
-SELECT
-  user_id,
-  user_name,
-  email,
-  company,
-  plan_type,
-  COALESCE(load_timestamp, CURRENT_TIMESTAMP()) AS load_timestamp,
-  COALESCE(update_timestamp, CURRENT_TIMESTAMP()) AS update_timestamp,
-  COALESCE(source_system, 'ZOOM_PLATFORM') AS source_system
-FROM validated_data
+select
+    user_id,
+    user_name,
+    email,
+    company,
+    plan_type,
+    coalesce(load_timestamp, current_timestamp()) as load_timestamp,
+    coalesce(update_timestamp, current_timestamp()) as update_timestamp,
+    coalesce(source_system, 'ZOOM_PLATFORM') as source_system
+from source_data
