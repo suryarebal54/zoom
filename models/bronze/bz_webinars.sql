@@ -1,8 +1,37 @@
 {{config(
   materialized = 'table',
-  pre_hook="{% if this.identifier != 'bz_audit_log' %} {{ log_table_load('webinars', 'STARTED') }} {% endif %}",
-  post_hook="{% if this.identifier != 'bz_audit_log' %} {{ log_table_load('webinars', 'COMPLETED') }} {% endif %}"
+  schema = 'bronze'
 )}}
+
+WITH source_data AS (
+  SELECT
+    webinar_id,
+    host_id,
+    webinar_topic,
+    start_time,
+    end_time,
+    registrants,
+    load_timestamp,
+    update_timestamp,
+    source_system
+  FROM {{ source('raw', 'webinars') }}
+),
+
+validated_data AS (
+  SELECT
+    -- Primary fields
+    webinar_id,
+    host_id,
+    webinar_topic,
+    start_time,
+    end_time,
+    registrants,
+    -- Metadata fields
+    load_timestamp,
+    update_timestamp,
+    source_system
+  FROM source_data
+)
 
 SELECT
   webinar_id,
@@ -11,7 +40,7 @@ SELECT
   start_time,
   end_time,
   registrants,
-  CURRENT_TIMESTAMP() as load_timestamp,
-  CURRENT_TIMESTAMP() as update_timestamp,
-  '{{ var("source_system") }}' as source_system
-FROM {{ source('raw', 'webinars') }}
+  COALESCE(load_timestamp, CURRENT_TIMESTAMP()) AS load_timestamp,
+  COALESCE(update_timestamp, CURRENT_TIMESTAMP()) AS update_timestamp,
+  COALESCE(source_system, 'ZOOM_PLATFORM') AS source_system
+FROM validated_data
