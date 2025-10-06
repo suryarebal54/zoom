@@ -1,43 +1,29 @@
 {{config(
-  materialized = 'table',
-  schema = 'bronze'
+    materialized='table',
+    pre_hook="{{ log_audit_start('feature_usage') }}",
+    post_hook="{{ log_audit_end('feature_usage') }}"
 )}}
 
-WITH source_data AS (
-  SELECT
-    usage_id,
-    meeting_id,
-    feature_name,
-    usage_count,
-    usage_date,
-    load_timestamp,
-    update_timestamp,
-    source_system
-  FROM {{ source('raw', 'feature_usage') }}
-),
-
-validated_data AS (
-  SELECT
-    -- Primary fields
-    usage_id,
-    meeting_id,
-    feature_name,
-    usage_count,
-    usage_date,
-    -- Metadata fields
-    load_timestamp,
-    update_timestamp,
-    source_system
-  FROM source_data
+with source_data as (
+    select
+        usage_id,
+        meeting_id,
+        feature_name,
+        usage_count,
+        usage_date,
+        load_timestamp,
+        update_timestamp,
+        source_system
+    from {{ source('raw', 'feature_usage') }}
 )
 
-SELECT
-  usage_id,
-  meeting_id,
-  feature_name,
-  usage_count,
-  usage_date,
-  COALESCE(load_timestamp, CURRENT_TIMESTAMP()) AS load_timestamp,
-  COALESCE(update_timestamp, CURRENT_TIMESTAMP()) AS update_timestamp,
-  COALESCE(source_system, 'ZOOM_PLATFORM') AS source_system
-FROM validated_data
+select
+    usage_id,
+    meeting_id,
+    feature_name,
+    usage_count,
+    usage_date,
+    coalesce(load_timestamp, current_timestamp()) as load_timestamp,
+    coalesce(update_timestamp, current_timestamp()) as update_timestamp,
+    coalesce(source_system, 'ZOOM_PLATFORM') as source_system
+from source_data
