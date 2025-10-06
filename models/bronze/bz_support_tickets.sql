@@ -1,8 +1,35 @@
 {{config(
   materialized = 'table',
-  pre_hook="{% if this.identifier != 'bz_audit_log' %} {{ log_table_load('support_tickets', 'STARTED') }} {% endif %}",
-  post_hook="{% if this.identifier != 'bz_audit_log' %} {{ log_table_load('support_tickets', 'COMPLETED') }} {% endif %}"
+  schema = 'bronze'
 )}}
+
+WITH source_data AS (
+  SELECT
+    ticket_id,
+    user_id,
+    ticket_type,
+    resolution_status,
+    open_date,
+    load_timestamp,
+    update_timestamp,
+    source_system
+  FROM {{ source('raw', 'support_tickets') }}
+),
+
+validated_data AS (
+  SELECT
+    -- Primary fields
+    ticket_id,
+    user_id,
+    ticket_type,
+    resolution_status,
+    open_date,
+    -- Metadata fields
+    load_timestamp,
+    update_timestamp,
+    source_system
+  FROM source_data
+)
 
 SELECT
   ticket_id,
@@ -10,7 +37,7 @@ SELECT
   ticket_type,
   resolution_status,
   open_date,
-  CURRENT_TIMESTAMP() as load_timestamp,
-  CURRENT_TIMESTAMP() as update_timestamp,
-  '{{ var("source_system") }}' as source_system
-FROM {{ source('raw', 'support_tickets') }}
+  COALESCE(load_timestamp, CURRENT_TIMESTAMP()) AS load_timestamp,
+  COALESCE(update_timestamp, CURRENT_TIMESTAMP()) AS update_timestamp,
+  COALESCE(source_system, 'ZOOM_PLATFORM') AS source_system
+FROM validated_data
